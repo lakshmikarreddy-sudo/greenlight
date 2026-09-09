@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Greenlight — Production Intelligence</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="hero">
+      <div class="hero-copy-block">
+        <div class="brand">GREENLIGHT</div>
+        <div class="descriptor">Screenplay intelligence → production decisions</div>
+        <h1>See the blockers before they become production problems.</h1>
+      </div>
+      <div class="hero-actions">
+        <button id="resetBtn" type="button" class="btn reset-btn">↻ Reset Demo</button>
+        <div id="analysisState" class="analysis-state state-ready">READY</div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="left-column">
+        <section class="card analyze-card">
+          <div class="section-heading">
+            <div>
+              <h2>Analyze a Screenplay</h2>
+              <p>Choose a demo scenario or paste your own screenplay.</p>
+            </div>
+          </div>
+
+          <div class="input-mode-tabs" role="tablist" aria-label="Screenplay input mode">
+            <button id="tabDemo" type="button" class="tab active" role="tab" aria-selected="true">Demo Scenario</button>
+            <button id="tabPaste" type="button" class="tab" role="tab" aria-selected="false">Paste Screenplay</button>
+          </div>
+
+          <div id="demoModePanel">
+            <div class="scenario-label">Choose a scenario</div>
+            <div id="scenarioButtons" class="scenario-buttons" role="group" aria-label="Demo scenarios"></div>
+            <div id="inputHint" class="input-hint">Select a scenario, then click Analyze to run the production assessment.</div>
+          </div>
+
+          <div id="pasteModePanel" class="hidden">
+            <div id="pasteHint" class="input-hint">Paste screenplay content for analysis.</div>
+          </div>
+
+          <textarea id="scriptInput" rows="4" placeholder="Select a demo scenario above..." aria-label="Screenplay text"></textarea>
+
+          <div class="actions">
+            <button id="analyzeBtn" type="button" class="btn primary">Analyze</button>
+            <button id="clearBtn" type="button" class="btn">Clear</button>
+          </div>
+        </section>
+
+        <section class="card activity-card">
+          <div class="card-heading-row">
+            <h3>Agent Activity</h3>
+            <span id="activityState" class="muted">Waiting for input</span>
+          </div>
+          <div id="eventLog" class="event-log" aria-live="polite">
+            <div class="empty-log">Select a scenario and click Analyze to start.</div>
+          </div>
+        </section>
+
+        <section class="card pipeline-card">
+          <div class="pipeline-label">Intelligence Pipeline</div>
+          <ol id="pipelineList" class="pipeline-list" aria-label="Analysis pipeline">
+            <li data-stage="INGEST" class="active">INGEST</li>
+            <li data-stage="EXTRACT">EXTRACT</li>
+            <li data-stage="TRIAGE">TRIAGE</li>
+            <li data-stage="RESEARCH">RESEARCH</li>
+            <li data-stage="ASSESS">ASSESS</li>
+            <li data-stage="MITIGATE">MITIGATE</li>
+            <li data-stage="GREENLIGHT">GREENLIGHT</li>
+          </ol>
+        </section>
+      </section>
+
+      <aside class="right-column">
+        <section class="card decision-card">
+          <div class="decision-header">
+            <h2>Production Decision</h2>
+            <span id="decisionStatus" class="decision-status muted">READY</span>
+          </div>
+
+          <div id="emptyState" class="empty-decision">
+            <div class="empty-title">Ready to analyze</div>
+            <div class="empty-copy">Select a demo scenario or paste a screenplay, then click Analyze.</div>
+          </div>
+
+          <div id="briefContent" class="brief-content hidden">
+            <div class="verdict-row">
+              <div id="overallStatus" class="verdict-pill status-muted">--</div>
+              <div class="readiness-block">
+                <span class="readiness-label">READINESS</span>
+                <strong id="readinessScore">--</strong>
+              </div>
+            </div>
+
+            <div id="briefHeadline" class="brief-headline"></div>
+
+            <div class="decision-grid">
+              <div class="decision-block">
+                <div class="decision-label">WHY</div>
+                <div id="whyShort">—</div>
+              </div>
+              <div class="decision-block">
+                <div class="decision-label">NEXT</div>
+                <div id="nextShort">—</div>
+              </div>
+            </div>
+
+            <div class="decision-counts">
+              <span id="greenCount" class="count-pill status-green">0 Green</span>
+              <span id="yellowCount" class="count-pill status-yellow">0 Yellow</span>
+              <span id="redCount" class="count-pill status-red">0 Red</span>
+              <span id="sceneCount" class="scene-count"></span>
+            </div>
+
+            <div class="explain-block">
+              <button id="toggleExplain" type="button" class="link-btn" aria-expanded="false" aria-controls="explainPanel">
+                How was this score calculated?
+              </button>
+              <div id="explainPanel" class="explain-panel hidden">
+                <div id="explainJurisdiction" class="explain-jurisdiction"></div>
+                <div id="explainSteps" class="explain-steps"></div>
+                <div id="explainStops" class="explain-stops"></div>
+                <div id="explainCheck" class="explain-check"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card brief-sections">
+          <section class="brief-section">
+            <div class="section-title-row">
+              <h3>Top Risks</h3>
+              <span id="topRisksMeta" class="section-meta"></span>
+            </div>
+            <div id="topRisksList" class="compact-list"><span class="muted">(none)</span></div>
+          </section>
+
+          <section class="brief-section">
+            <h3>Evidence &amp; Citations</h3>
+            <div id="evidenceList" class="compact-list"><span class="muted">(none)</span></div>
+          </section>
+
+          <section class="brief-section">
+            <h3>Decision Chain</h3>
+            <div id="decisionChainList" class="compact-list"><span class="muted">(none)</span></div>
+          </section>
+
+          <section class="brief-section">
+            <h3>Scene → Production Impact</h3>
+            <div id="sceneBreakdownList" class="compact-list"><span class="muted">(none)</span></div>
+          </section>
+
+          <div class="technical">
+            <button id="toggleTech" type="button" class="btn small-btn" aria-expanded="false">View audit trail</button>
+            <div id="briefDetails" class="brief-details hidden"></div>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">Demo — does not send API keys or secrets. Local demo mode.</footer>
+  </div>
+
+  <script src="/static/js/api.js"></script>
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>
